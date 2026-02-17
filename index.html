@@ -226,52 +226,53 @@ function generateOfferPDF() {
     img.src = './images/logo.png';
 
     img.onload = function() {
-
-        // ===== GREEN HEADER BAR =====
-        pdf.setFillColor(29, 185, 84);
+        // ===== HEADER BAR =====
+        pdf.setFillColor(29, 185, 84); // green
         pdf.rect(0, 0, 210, 30, "F");
 
-        // Logo (no stretching)
+        // Logo
         const imgWidth = 30;
         const imgHeight = (img.height * imgWidth) / img.width;
         pdf.addImage(img, 'PNG', 15, 5, imgWidth, imgHeight);
 
         // Company Name
         pdf.setFontSize(20);
-        pdf.setTextColor(255,255,255);
+        pdf.setTextColor(255, 255, 255);
         pdf.text("NFD Printing", 60, 18);
 
-        // Reset text color
-        pdf.setTextColor(0,0,0);
+        pdf.setTextColor(0, 0, 0);
 
-        // ===== CLIENT INFO =====
-        pdf.setFontSize(14);
-        pdf.text("OFFER", 15, 50);
+        // ===== CLIENT INFO CARD (like site card) =====
+        pdf.setFillColor(30,30,30); // dark card
+        pdf.rect(15, 40, 180, 40, "F"); // x, y, width, height
 
         pdf.setFontSize(11);
-        pdf.text("Client: " + (clientNameInput.value || "-"), 15, 60);
-        pdf.text("Project: " + (projectNameInput.value || "-"), 15, 68);
-        pdf.text("Date: " + new Date().toLocaleDateString(), 15, 76);
+        pdf.setTextColor(255,255,255);
+        pdf.text("Client: " + (clientNameInput.value || "-"), 20, 50);
+        pdf.text("Project: " + (projectNameInput.value || "-"), 20, 58);
+        pdf.text("Date: " + new Date().toLocaleDateString(), 20, 66);
 
-        // ===== BREAKDOWN BOX =====
-        pdf.setDrawColor(29,185,84);
-        pdf.rect(15, 85, 180, 60);
+        // ===== BREAKDOWN CARD =====
+        pdf.setFillColor(46,46,46); // darker card color like inputs
+        pdf.rect(15, 90, 180, 60, "F");
 
+        pdf.setTextColor(255,255,255);
+        pdf.setFontSize(12);
         let breakdownText = breakdown.innerText.split("\n");
-        let y = 95;
+        let y = 100;
 
         breakdownText.forEach(line => {
             pdf.text(line, 20, y);
             y += 8;
         });
 
-        // ===== FINAL PRICE BOX =====
-        pdf.setFillColor(29,185,84);
-        pdf.rect(15, 155, 180, 20, "F");
+        // ===== FINAL PRICE HIGHLIGHT =====
+        pdf.setFillColor(29, 185, 84); // same green as site
+        pdf.rect(15, 160, 180, 20, "F");
 
         pdf.setTextColor(255,255,255);
         pdf.setFontSize(16);
-        pdf.text(finalPriceDiv.innerText, 20, 168);
+        pdf.text(finalPriceDiv.innerText, 20, 173);
 
         pdf.save((clientNameInput.value || "Offer") + ".pdf");
     };
