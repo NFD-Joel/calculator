@@ -2,64 +2,101 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>3D Print Price Calculator</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3D Print Calculator</title>
+
 <style>
-    body {
-        font-family: Arial, sans-serif;
-        background: #1e1e1e;
-        color: white;
-        padding: 30px;
-    }
-    h1 {
-        color: #4CAF50;
-    }
-    .container {
-        max-width: 600px;
-        background: #2a2a2a;
-        padding: 20px;
-        border-radius: 10px;
-    }
-    label {
-        display: block;
-        margin-top: 10px;
-    }
-    input {
-        width: 100%;
-        padding: 6px;
-        margin-top: 4px;
-        border-radius: 5px;
-        border: none;
-    }
-    button {
-        margin-top: 15px;
-        padding: 10px;
-        width: 100%;
-        background: #4CAF50;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        font-size: 16px;
-        cursor: pointer;
-    }
-    .result {
-        margin-top: 20px;
-        background: #333;
-        padding: 15px;
-        border-radius: 8px;
-    }
-    .final {
-        font-size: 22px;
-        color: #4CAF50;
-        font-weight: bold;
-    }
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background: #111;
+    color: white;
+}
+
+header {
+    background: #1db954;
+    padding: 15px;
+    text-align: center;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.container {
+    padding: 15px;
+}
+
+.card {
+    background: #1e1e1e;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 12px;
+}
+
+label {
+    font-size: 14px;
+    display: block;
+    margin-top: 10px;
+    opacity: 0.8;
+}
+
+input {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    border-radius: 8px;
+    border: none;
+    margin-top: 5px;
+    background: #2c2c2c;
+    color: white;
+}
+
+button {
+    width: 100%;
+    padding: 15px;
+    font-size: 18px;
+    border-radius: 10px;
+    border: none;
+    background: #1db954;
+    color: white;
+    margin-top: 15px;
+    cursor: pointer;
+}
+
+button:active {
+    transform: scale(0.98);
+}
+
+.result {
+    background: #1e1e1e;
+    padding: 15px;
+    border-radius: 12px;
+    margin-top: 15px;
+}
+
+.final-box {
+    position: sticky;
+    bottom: 0;
+    background: #1db954;
+    padding: 15px;
+    text-align: center;
+    font-size: 22px;
+    font-weight: bold;
+}
+
+.small {
+    font-size: 13px;
+    opacity: 0.7;
+}
 </style>
 </head>
+
 <body>
 
-<h1>3D Print Price Calculator</h1>
+<header>3D Print Price Calculator</header>
 
 <div class="container">
 
+<div class="card">
 <label>Material price per kg (Gs)</label>
 <input type="number" id="materialPrice" value="200000">
 
@@ -81,33 +118,38 @@
 <label>Labor per job (Gs)</label>
 <input type="number" id="labor" value="15000">
 
-<label>Profit margin (e.g. 0.30 for 30%)</label>
+<label>Profit margin (0.30 = 30%)</label>
 <input type="number" step="0.01" id="profitMargin" value="0.30">
 
-<label>IVA (e.g. 0.10 for 10%)</label>
+<label>IVA (0.10 = 10%)</label>
 <input type="number" step="0.01" id="iva" value="0.10">
 
 <label>Minimum final price (Gs)</label>
 <input type="number" id="minimum" value="40000">
 
-<button onclick="calculate()">Calculate</button>
+<button onclick="calculate()">CALCULATE PRICE</button>
+</div>
 
-<div class="result" id="result"></div>
+<div class="card result" id="breakdown"></div>
 
+</div>
+
+<div class="final-box" id="finalPrice">
+FINAL PRICE: -
 </div>
 
 <script>
 function calculate() {
-    let materialPrice = parseFloat(document.getElementById("materialPrice").value);
-    let shipping = parseFloat(document.getElementById("shipping").value);
-    let weight = parseFloat(document.getElementById("weight").value);
-    let quantity = parseFloat(document.getElementById("quantity").value);
-    let hours = parseFloat(document.getElementById("hours").value);
-    let machineCost = parseFloat(document.getElementById("machineCost").value);
-    let labor = parseFloat(document.getElementById("labor").value);
-    let profitMargin = parseFloat(document.getElementById("profitMargin").value);
-    let iva = parseFloat(document.getElementById("iva").value);
-    let minimum = parseFloat(document.getElementById("minimum").value);
+    let materialPrice = parseFloat(materialPrice.value);
+    let shipping = parseFloat(shipping.value);
+    let weight = parseFloat(weight.value);
+    let quantity = parseFloat(quantity.value);
+    let hours = parseFloat(hours.value);
+    let machineCost = parseFloat(machineCost.value);
+    let labor = parseFloat(labor.value);
+    let profitMargin = parseFloat(profitMargin.value);
+    let iva = parseFloat(iva.value);
+    let minimum = parseFloat(minimum.value);
 
     let adjustedKg = materialPrice + shipping;
     let materialCost = (adjustedKg / 1000) * weight * quantity;
@@ -128,18 +170,18 @@ function calculate() {
 
     if (finalPrice < minimum) finalPrice = minimum;
 
-    document.getElementById("result").innerHTML = `
-        <p>Adjusted kg price: ${adjustedKg.toFixed(0)} Gs</p>
-        <p>Material cost: ${materialCost.toFixed(0)} Gs</p>
-        <p>Machine cost: ${machine.toFixed(0)} Gs</p>
-        <p>Labor: ${labor.toFixed(0)} Gs</p>
-        <p>Base cost: ${baseCost.toFixed(0)} Gs</p>
-        <p>Profit: ${profit.toFixed(0)} Gs</p>
-        <p>Batch discount (${(discountPercent*100).toFixed(0)}%): -${discount.toFixed(0)} Gs</p>
-        <p>IVA: ${ivaAmount.toFixed(0)} Gs</p>
-        <hr>
-        <p class="final">FINAL PRICE: ${finalPrice.toFixed(0)} Gs</p>
+    document.getElementById("breakdown").innerHTML = `
+        <div class="small">Adjusted kg price: ${adjustedKg.toFixed(0)} Gs</div>
+        <div class="small">Material: ${materialCost.toFixed(0)} Gs</div>
+        <div class="small">Machine: ${machine.toFixed(0)} Gs</div>
+        <div class="small">Labor: ${labor.toFixed(0)} Gs</div>
+        <div class="small">Profit: ${profit.toFixed(0)} Gs</div>
+        <div class="small">Batch discount (${(discountPercent*100).toFixed(0)}%): -${discount.toFixed(0)} Gs</div>
+        <div class="small">IVA: ${ivaAmount.toFixed(0)} Gs</div>
     `;
+
+    document.getElementById("finalPrice").innerHTML =
+        "FINAL PRICE: " + finalPrice.toFixed(0) + " Gs";
 }
 </script>
 
