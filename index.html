@@ -222,33 +222,58 @@ function generateOfferPDF() {
     const { jsPDF } = window.jspdf;
     const pdf = new jsPDF();
 
-    // Logo
     const img = new Image();
     img.src = './images/logo.png';
+
     img.onload = function() {
-        pdf.addImage(img, 'PNG', 10, 10, 50, 25); // 50mm width, height auto
 
-        // Header
+        // ===== GREEN HEADER BAR =====
+        pdf.setFillColor(29, 185, 84);
+        pdf.rect(0, 0, 210, 30, "F");
+
+        // Logo (no stretching)
+        const imgWidth = 30;
+        const imgHeight = (img.height * imgWidth) / img.width;
+        pdf.addImage(img, 'PNG', 15, 5, imgWidth, imgHeight);
+
+        // Company Name
+        pdf.setFontSize(20);
+        pdf.setTextColor(255,255,255);
+        pdf.text("NFD Printing", 60, 18);
+
+        // Reset text color
+        pdf.setTextColor(0,0,0);
+
+        // ===== CLIENT INFO =====
+        pdf.setFontSize(14);
+        pdf.text("OFFER", 15, 50);
+
+        pdf.setFontSize(11);
+        pdf.text("Client: " + (clientNameInput.value || "-"), 15, 60);
+        pdf.text("Project: " + (projectNameInput.value || "-"), 15, 68);
+        pdf.text("Date: " + new Date().toLocaleDateString(), 15, 76);
+
+        // ===== BREAKDOWN BOX =====
+        pdf.setDrawColor(29,185,84);
+        pdf.rect(15, 85, 180, 60);
+
+        let breakdownText = breakdown.innerText.split("\n");
+        let y = 95;
+
+        breakdownText.forEach(line => {
+            pdf.text(line, 20, y);
+            y += 8;
+        });
+
+        // ===== FINAL PRICE BOX =====
+        pdf.setFillColor(29,185,84);
+        pdf.rect(15, 155, 180, 20, "F");
+
+        pdf.setTextColor(255,255,255);
         pdf.setFontSize(16);
-        pdf.text("Offer for: " + (clientNameInput.value || "Client"), 70, 20);
-        if(projectNameInput.value) pdf.text("Project: " + projectNameInput.value, 70, 30);
+        pdf.text(finalPriceDiv.innerText, 20, 168);
 
-        // Price breakdown
-        pdf.setFontSize(12);
-        let y = 50;
-        pdf.text(`Material: ${formatGs(parseFloat(materialPriceInput.value))}`, 10, y);
-        y += 10;
-        pdf.text(`Machine: ${formatGs(parseFloat(hoursInput.value) * parseFloat(machineCostInput.value))}`, 10, y);
-        y += 10;
-        pdf.text(`Labor: ${formatGs(parseFloat(laborInput.value))}`, 10, y);
-        y += 10;
-        pdf.text(`Profit: ${formatGs(parseFloat(profitMarginInput.value) * (parseFloat(materialPriceInput.value) + parseFloat(hoursInput.value) * parseFloat(machineCostInput.value) + parseFloat(laborInput.value)))}`, 10, y);
-        y += 10;
-        pdf.text(finalPriceDiv.innerText, 10, y);
-
-        // Save PDF
-        let filename = clientNameInput.value ? clientNameInput.value : "Offer";
-        pdf.save(`${filename}.pdf`);
+        pdf.save((clientNameInput.value || "Offer") + ".pdf");
     };
 }
 
