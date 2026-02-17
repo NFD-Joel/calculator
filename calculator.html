@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>3D Print Price Calculator</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: #1e1e1e;
+        color: white;
+        padding: 30px;
+    }
+    h1 {
+        color: #4CAF50;
+    }
+    .container {
+        max-width: 600px;
+        background: #2a2a2a;
+        padding: 20px;
+        border-radius: 10px;
+    }
+    label {
+        display: block;
+        margin-top: 10px;
+    }
+    input {
+        width: 100%;
+        padding: 6px;
+        margin-top: 4px;
+        border-radius: 5px;
+        border: none;
+    }
+    button {
+        margin-top: 15px;
+        padding: 10px;
+        width: 100%;
+        background: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+    }
+    .result {
+        margin-top: 20px;
+        background: #333;
+        padding: 15px;
+        border-radius: 8px;
+    }
+    .final {
+        font-size: 22px;
+        color: #4CAF50;
+        font-weight: bold;
+    }
+</style>
+</head>
+<body>
+
+<h1>3D Print Price Calculator</h1>
+
+<div class="container">
+
+<label>Material price per kg (Gs)</label>
+<input type="number" id="materialPrice" value="200000">
+
+<label>Shipping per kg (Gs)</label>
+<input type="number" id="shipping" value="10000">
+
+<label>Weight per piece (g)</label>
+<input type="number" id="weight" value="7.5">
+
+<label>Quantity</label>
+<input type="number" id="quantity" value="1">
+
+<label>Print hours (total job)</label>
+<input type="number" id="hours" value="1">
+
+<label>Machine cost per hour (Gs)</label>
+<input type="number" id="machineCost" value="2500">
+
+<label>Labor per job (Gs)</label>
+<input type="number" id="labor" value="15000">
+
+<label>Profit margin (e.g. 0.30 for 30%)</label>
+<input type="number" step="0.01" id="profitMargin" value="0.30">
+
+<label>IVA (e.g. 0.10 for 10%)</label>
+<input type="number" step="0.01" id="iva" value="0.10">
+
+<label>Minimum final price (Gs)</label>
+<input type="number" id="minimum" value="40000">
+
+<button onclick="calculate()">Calculate</button>
+
+<div class="result" id="result"></div>
+
+</div>
+
+<script>
+function calculate() {
+    let materialPrice = parseFloat(document.getElementById("materialPrice").value);
+    let shipping = parseFloat(document.getElementById("shipping").value);
+    let weight = parseFloat(document.getElementById("weight").value);
+    let quantity = parseFloat(document.getElementById("quantity").value);
+    let hours = parseFloat(document.getElementById("hours").value);
+    let machineCost = parseFloat(document.getElementById("machineCost").value);
+    let labor = parseFloat(document.getElementById("labor").value);
+    let profitMargin = parseFloat(document.getElementById("profitMargin").value);
+    let iva = parseFloat(document.getElementById("iva").value);
+    let minimum = parseFloat(document.getElementById("minimum").value);
+
+    let adjustedKg = materialPrice + shipping;
+    let materialCost = (adjustedKg / 1000) * weight * quantity;
+    let machine = hours * machineCost;
+    let baseCost = materialCost + machine + labor;
+    let profit = baseCost * profitMargin;
+
+    let discountPercent = 0;
+    if (quantity == 1) discountPercent = 0;
+    else if (quantity <= 3) discountPercent = 0.10;
+    else if (quantity <= 6) discountPercent = 0.20;
+    else discountPercent = 0.30;
+
+    let discount = (labor + profit) * discountPercent;
+    let net = baseCost + profit - discount;
+    let ivaAmount = net * iva;
+    let finalPrice = net + ivaAmount;
+
+    if (finalPrice < minimum) finalPrice = minimum;
+
+    document.getElementById("result").innerHTML = `
+        <p>Adjusted kg price: ${adjustedKg.toFixed(0)} Gs</p>
+        <p>Material cost: ${materialCost.toFixed(0)} Gs</p>
+        <p>Machine cost: ${machine.toFixed(0)} Gs</p>
+        <p>Labor: ${labor.toFixed(0)} Gs</p>
+        <p>Base cost: ${baseCost.toFixed(0)} Gs</p>
+        <p>Profit: ${profit.toFixed(0)} Gs</p>
+        <p>Batch discount (${(discountPercent*100).toFixed(0)}%): -${discount.toFixed(0)} Gs</p>
+        <p>IVA: ${ivaAmount.toFixed(0)} Gs</p>
+        <hr>
+        <p class="final">FINAL PRICE: ${finalPrice.toFixed(0)} Gs</p>
+    `;
+}
+</script>
+
+</body>
+</html>
