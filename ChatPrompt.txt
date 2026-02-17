@@ -4,3 +4,15 @@
 2 - Then i would like to add a logo aswell which ill provide in the folder /images as a logo.png , just give me the dimensions the Logo should have.
 3 - Add the PDF Offer export, so that i can save it for example in my Clients folder as ClientName.pdf . But for this one my questions are: What would be in the PDF Offer export? and How detailed should my quote for the client be? cause surely he doesnt need to know every detail of my price or what do you think? 
 4 - What would the Invoice generator do or be?
+
+
+Then replace the word "Payment Method" with "IVA".
+Then the text under "IVA" : "Wire Transfer" replace with "placeholder ivaAmount".
+Then replace the word "Note" with "Observación".
+Then the text under "Observación" : "N/A" replace with "placeholder observation".
+Then replace the Text "Total Gross Salary ($)" with "Precio total (Gs)".
+Then the text under "Precio total (Gs)" : "$3800" replace with "placeholder totalPrice".
+Then replace the Text "Total Deductions ($)" with "Descuentos (Gs)".
+Then the text under "Descuentos (Gs)" : "$400" replace with "placeholder discount".
+Then replace the Text "Total Net Pay ($)" with "Total a pagar (Gs)".
+Then the text under "Total a pagar (Gs)" : "3470" replace with "placeholder finalPrice".
