@@ -1,0 +1,6 @@
+ Chat Prompt
+
+1 - I Would like to add customer and project names (optional).
+2 - Then i would like to add a logo aswell which ill provide in the folder /images as a logo.png , just give me the dimensions the Logo should have.
+3 - Add the PDF Offer export, so that i can save it for example in my Clients folder as ClientName.pdf . But for this one my questions are: What would be in the PDF Offer export? and How detailed should my quote for the client be? cause surely he doesnt need to know every detail of my price or what do you think? 
+4 - What would the Invoice generator do or be?
