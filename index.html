@@ -3,7 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>3D Print Calculator</title>
+<title>NFD Printing Calculator</title>
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1db954">
 
 <style>
 body {
@@ -19,6 +22,11 @@ header {
     text-align: center;
     font-size: 20px;
     font-weight: bold;
+}
+
+.sub {
+    font-size: 13px;
+    opacity: 0.8;
 }
 
 .container {
@@ -50,22 +58,6 @@ input {
     color: white;
 }
 
-button {
-    width: 100%;
-    padding: 15px;
-    font-size: 18px;
-    border-radius: 10px;
-    border: none;
-    background: #1db954;
-    color: white;
-    margin-top: 15px;
-    cursor: pointer;
-}
-
-button:active {
-    transform: scale(0.98);
-}
-
 .result {
     background: #1e1e1e;
     padding: 15px;
@@ -92,7 +84,10 @@ button:active {
 
 <body>
 
-<header>3D Print Price Calculator</header>
+<header>
+NFD Printing
+<div class="sub">3D Print Price Calculator</div>
+</header>
 
 <div class="container">
 
@@ -126,8 +121,6 @@ button:active {
 
 <label>Minimum final price (Gs)</label>
 <input type="number" id="minimum" value="40000">
-
-<button onclick="calculate()">CALCULATE PRICE</button>
 </div>
 
 <div class="card result" id="breakdown"></div>
@@ -139,18 +132,22 @@ FINAL PRICE: -
 </div>
 
 <script>
+function formatGs(value) {
+    return value.toLocaleString("en-US") + " Gs";
+}
+
 function calculate() {
 
-    let materialPrice = parseFloat(document.getElementById("materialPrice").value);
-    let shipping = parseFloat(document.getElementById("shipping").value);
-    let weight = parseFloat(document.getElementById("weight").value);
-    let quantity = parseFloat(document.getElementById("quantity").value);
-    let hours = parseFloat(document.getElementById("hours").value);
-    let machineCost = parseFloat(document.getElementById("machineCost").value);
-    let labor = parseFloat(document.getElementById("labor").value);
-    let profitMargin = parseFloat(document.getElementById("profitMargin").value);
-    let iva = parseFloat(document.getElementById("iva").value);
-    let minimum = parseFloat(document.getElementById("minimum").value);
+    let materialPrice = parseFloat(materialPriceInput.value) || 0;
+    let shipping = parseFloat(shippingInput.value) || 0;
+    let weight = parseFloat(weightInput.value) || 0;
+    let quantity = parseFloat(quantityInput.value) || 0;
+    let hours = parseFloat(hoursInput.value) || 0;
+    let machineCost = parseFloat(machineCostInput.value) || 0;
+    let labor = parseFloat(laborInput.value) || 0;
+    let profitMargin = parseFloat(profitMarginInput.value) || 0;
+    let iva = parseFloat(ivaInput.value) || 0;
+    let minimum = parseFloat(minimumInput.value) || 0;
 
     let adjustedKg = materialPrice + shipping;
     let materialCost = (adjustedKg / 1000) * weight * quantity;
@@ -171,18 +168,39 @@ function calculate() {
 
     if (finalPrice < minimum) finalPrice = minimum;
 
-    document.getElementById("breakdown").innerHTML = `
-        <div class="small">Adjusted kg price: ${adjustedKg.toFixed(0)} Gs</div>
-        <div class="small">Material: ${materialCost.toFixed(0)} Gs</div>
-        <div class="small">Machine: ${machine.toFixed(0)} Gs</div>
-        <div class="small">Labor: ${labor.toFixed(0)} Gs</div>
-        <div class="small">Profit: ${profit.toFixed(0)} Gs</div>
-        <div class="small">Batch discount (${(discountPercent*100).toFixed(0)}%): -${discount.toFixed(0)} Gs</div>
-        <div class="small">IVA: ${ivaAmount.toFixed(0)} Gs</div>
+    breakdown.innerHTML = `
+        <div class="small">Material: ${formatGs(materialCost)}</div>
+        <div class="small">Machine: ${formatGs(machine)}</div>
+        <div class="small">Labor: ${formatGs(labor)}</div>
+        <div class="small">Profit: ${formatGs(profit)}</div>
+        <div class="small">Discount (${discountPercent*100}%): -${formatGs(discount)}</div>
+        <div class="small">IVA: ${formatGs(ivaAmount)}</div>
     `;
 
-    document.getElementById("finalPrice").innerHTML =
-        "FINAL PRICE: " + finalPrice.toFixed(0) + " Gs";
+    finalPriceDiv.innerHTML = "FINAL PRICE: " + formatGs(Math.round(finalPrice));
+}
+
+const materialPriceInput = document.getElementById("materialPrice");
+const shippingInput = document.getElementById("shipping");
+const weightInput = document.getElementById("weight");
+const quantityInput = document.getElementById("quantity");
+const hoursInput = document.getElementById("hours");
+const machineCostInput = document.getElementById("machineCost");
+const laborInput = document.getElementById("labor");
+const profitMarginInput = document.getElementById("profitMargin");
+const ivaInput = document.getElementById("iva");
+const minimumInput = document.getElementById("minimum");
+const breakdown = document.getElementById("breakdown");
+const finalPriceDiv = document.getElementById("finalPrice");
+
+document.querySelectorAll("input").forEach(input => {
+    input.addEventListener("input", calculate);
+});
+
+calculate();
+
+if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("service-worker.js");
 }
 </script>
 
