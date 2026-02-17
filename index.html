@@ -140,16 +140,17 @@ FINAL PRICE: -
 
 <script>
 function calculate() {
-    let materialPrice = parseFloat(materialPrice.value);
-    let shipping = parseFloat(shipping.value);
-    let weight = parseFloat(weight.value);
-    let quantity = parseFloat(quantity.value);
-    let hours = parseFloat(hours.value);
-    let machineCost = parseFloat(machineCost.value);
-    let labor = parseFloat(labor.value);
-    let profitMargin = parseFloat(profitMargin.value);
-    let iva = parseFloat(iva.value);
-    let minimum = parseFloat(minimum.value);
+
+    let materialPrice = parseFloat(document.getElementById("materialPrice").value);
+    let shipping = parseFloat(document.getElementById("shipping").value);
+    let weight = parseFloat(document.getElementById("weight").value);
+    let quantity = parseFloat(document.getElementById("quantity").value);
+    let hours = parseFloat(document.getElementById("hours").value);
+    let machineCost = parseFloat(document.getElementById("machineCost").value);
+    let labor = parseFloat(document.getElementById("labor").value);
+    let profitMargin = parseFloat(document.getElementById("profitMargin").value);
+    let iva = parseFloat(document.getElementById("iva").value);
+    let minimum = parseFloat(document.getElementById("minimum").value);
 
     let adjustedKg = materialPrice + shipping;
     let materialCost = (adjustedKg / 1000) * weight * quantity;
