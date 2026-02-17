@@ -3,187 +3,195 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NFD Printing - 3D Price Calculator</title>
+<title>NFD Printing Calculator</title>
 
 <link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1db954">
 
 <style>
-* {
-    box-sizing: border-box;
-}
-
 body {
-    margin: 0;
     font-family: Arial, sans-serif;
-    background: #0f0f0f;
+    margin: 0;
+    background: #111;
     color: white;
 }
 
 header {
-    background: #58b05a;
+    background: #1db954;
+    padding: 15px;
     text-align: center;
-    padding: 25px 10px;
+    font-size: 20px;
+    font-weight: bold;
 }
 
-header h1 {
-    margin: 0;
-    font-size: 28px;
-}
-
-header p {
-    margin: 5px 0 0;
-    font-size: 16px;
-    opacity: 0.9;
+.sub {
+    font-size: 13px;
+    opacity: 0.8;
 }
 
 .container {
-    padding: 20px;
+    padding: 15px;
 }
 
 .card {
     background: #1e1e1e;
-    padding: 20px;
-    border-radius: 16px;
-    margin: 0 auto;
-    max-width: 500px;
-    width: 100%;
-}
-
-.form-group {
-    margin-bottom: 18px;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 12px;
 }
 
 label {
-    display: block;
-    margin-bottom: 6px;
     font-size: 14px;
+    display: block;
+    margin-top: 10px;
     opacity: 0.8;
 }
 
 input {
     width: 100%;
-    padding: 14px;
-    border-radius: 10px;
-    border: none;
-    background: #2e2e2e;
-    color: white;
+    padding: 12px;
     font-size: 16px;
-}
-
-input:focus {
-    outline: 2px solid #58b05a;
+    border-radius: 8px;
+    border: none;
+    margin-top: 5px;
+    background: #2c2c2c;
+    color: white;
 }
 
 .result {
-    position: sticky;
-    bottom: 0;
-    background: #58b05a;
-    text-align: center;
-    padding: 20px;
-    font-size: 26px;
-    font-weight: bold;
-    margin-top: 20px;
+    background: #1e1e1e;
+    padding: 15px;
+    border-radius: 12px;
+    margin-top: 15px;
 }
 
-.breakdown {
-    margin-top: 20px;
-    font-size: 14px;
-    opacity: 0.8;
+.final-box {
+    position: sticky;
+    bottom: 0;
+    background: #1db954;
+    padding: 15px;
+    text-align: center;
+    font-size: 22px;
+    font-weight: bold;
+}
+
+.small {
+    font-size: 13px;
+    opacity: 0.7;
 }
 </style>
 </head>
+
 <body>
 
 <header>
-    <h1>NFD Printing</h1>
-    <p>3D Print Price Calculator</p>
+NFD Printing
+<div class="sub">3D Print Price Calculator</div>
 </header>
 
 <div class="container">
-    <div class="card">
 
-        <div class="form-group">
-            <label>Material price per kg (Gs)</label>
-            <input type="number" id="materialPrice" value="180000">
-        </div>
+<div class="card">
+<label>Material price per kg (Gs)</label>
+<input type="number" id="materialPrice" value="200000">
 
-        <div class="form-group">
-            <label>Shipping per kg (Gs)</label>
-            <input type="number" id="shipping" value="10000">
-        </div>
+<label>Shipping per kg (Gs)</label>
+<input type="number" id="shipping" value="10000">
 
-        <div class="form-group">
-            <label>Weight per piece (g)</label>
-            <input type="number" id="weight" value="14">
-        </div>
+<label>Weight per piece (g)</label>
+<input type="number" id="weight" value="7.5">
 
-        <div class="form-group">
-            <label>Quantity</label>
-            <input type="number" id="quantity" value="20">
-        </div>
+<label>Quantity</label>
+<input type="number" id="quantity" value="1">
 
-        <div class="form-group">
-            <label>Print hours (total job)</label>
-            <input type="number" id="hours" value="10">
-        </div>
+<label>Print hours (total job)</label>
+<input type="number" id="hours" value="1">
 
-        <div class="form-group">
-            <label>Machine cost per hour (Gs)</label>
-            <input type="number" id="machineCost" value="2500">
-        </div>
+<label>Machine cost per hour (Gs)</label>
+<input type="number" id="machineCost" value="2500">
 
-        <div class="form-group">
-            <label>Labor per job (Gs)</label>
-            <input type="number" id="labor" value="15000">
-        </div>
+<label>Labor per job (Gs)</label>
+<input type="number" id="labor" value="15000">
 
-        <div class="form-group">
-            <label>Profit margin (%)</label>
-            <input type="number" id="profit" value="30">
-        </div>
+<label>Profit margin (0.30 = 30%)</label>
+<input type="number" step="0.01" id="profitMargin" value="0.30">
 
-        <div class="breakdown" id="breakdown"></div>
+<label>IVA (0.10 = 10%)</label>
+<input type="number" step="0.01" id="iva" value="0.10">
 
-    </div>
+<label>Minimum final price (Gs)</label>
+<input type="number" id="minimum" value="40000">
+</div>
 
-    <div class="result" id="finalPrice">
-        FINAL PRICE: 0 Gs
-    </div>
+<div class="card result" id="breakdown"></div>
+
+</div>
+
+<div class="final-box" id="finalPrice">
+FINAL PRICE: -
 </div>
 
 <script>
-function formatGs(number) {
-    return number.toLocaleString("de-DE") + " Gs";
+function formatGs(value) {
+    return value.toLocaleString("en-US") + " Gs";
 }
 
 function calculate() {
-    const materialPrice = parseFloat(document.getElementById("materialPrice").value) || 0;
-    const shipping = parseFloat(document.getElementById("shipping").value) || 0;
-    const weight = parseFloat(document.getElementById("weight").value) || 0;
-    const quantity = parseFloat(document.getElementById("quantity").value) || 0;
-    const hours = parseFloat(document.getElementById("hours").value) || 0;
-    const machineCost = parseFloat(document.getElementById("machineCost").value) || 0;
-    const labor = parseFloat(document.getElementById("labor").value) || 0;
-    const profitPercent = parseFloat(document.getElementById("profit").value) || 0;
 
-    const totalWeightKg = (weight * quantity) / 1000;
-    const materialCost = totalWeightKg * (materialPrice + shipping);
-    const machineTotal = hours * machineCost;
+    let materialPrice = parseFloat(materialPriceInput.value) || 0;
+    let shipping = parseFloat(shippingInput.value) || 0;
+    let weight = parseFloat(weightInput.value) || 0;
+    let quantity = parseFloat(quantityInput.value) || 0;
+    let hours = parseFloat(hoursInput.value) || 0;
+    let machineCost = parseFloat(machineCostInput.value) || 0;
+    let labor = parseFloat(laborInput.value) || 0;
+    let profitMargin = parseFloat(profitMarginInput.value) || 0;
+    let iva = parseFloat(ivaInput.value) || 0;
+    let minimum = parseFloat(minimumInput.value) || 0;
 
-    const baseCost = materialCost + machineTotal + labor;
-    const profit = baseCost * (profitPercent / 100);
-    const final = baseCost + profit;
+    let adjustedKg = materialPrice + shipping;
+    let materialCost = (adjustedKg / 1000) * weight * quantity;
+    let machine = hours * machineCost;
+    let baseCost = materialCost + machine + labor;
+    let profit = baseCost * profitMargin;
 
-    document.getElementById("finalPrice").innerText =
-        "FINAL PRICE: " + formatGs(Math.round(final));
+    let discountPercent = 0;
+    if (quantity == 1) discountPercent = 0;
+    else if (quantity <= 3) discountPercent = 0.10;
+    else if (quantity <= 6) discountPercent = 0.20;
+    else discountPercent = 0.30;
 
-    document.getElementById("breakdown").innerHTML = `
-        Material: ${formatGs(Math.round(materialCost))}<br>
-        Machine: ${formatGs(Math.round(machineTotal))}<br>
-        Labor: ${formatGs(Math.round(labor))}<br>
-        Profit: ${formatGs(Math.round(profit))}
+    let discount = (labor + profit) * discountPercent;
+    let net = baseCost + profit - discount;
+    let ivaAmount = net * iva;
+    let finalPrice = net + ivaAmount;
+
+    if (finalPrice < minimum) finalPrice = minimum;
+
+    breakdown.innerHTML = `
+        <div class="small">Material: ${formatGs(materialCost)}</div>
+        <div class="small">Machine: ${formatGs(machine)}</div>
+        <div class="small">Labor: ${formatGs(labor)}</div>
+        <div class="small">Profit: ${formatGs(profit)}</div>
+        <div class="small">Discount (${discountPercent*100}%): -${formatGs(discount)}</div>
+        <div class="small">IVA: ${formatGs(ivaAmount)}</div>
     `;
+
+    finalPriceDiv.innerHTML = "FINAL PRICE: " + formatGs(Math.round(finalPrice));
 }
+
+const materialPriceInput = document.getElementById("materialPrice");
+const shippingInput = document.getElementById("shipping");
+const weightInput = document.getElementById("weight");
+const quantityInput = document.getElementById("quantity");
+const hoursInput = document.getElementById("hours");
+const machineCostInput = document.getElementById("machineCost");
+const laborInput = document.getElementById("labor");
+const profitMarginInput = document.getElementById("profitMargin");
+const ivaInput = document.getElementById("iva");
+const minimumInput = document.getElementById("minimum");
+const breakdown = document.getElementById("breakdown");
+const finalPriceDiv = document.getElementById("finalPrice");
 
 document.querySelectorAll("input").forEach(input => {
     input.addEventListener("input", calculate);
