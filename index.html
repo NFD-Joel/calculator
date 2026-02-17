@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <title>NFD Printing Calculator</title>
 
 <link rel="manifest" href="manifest.json">
@@ -104,6 +105,12 @@ input:focus {
 <div class="container">
 
 <div class="card">
+<label>Client Name</label>
+<input type="text" id="clientName" placeholder="Optional">
+
+<label>Project Name</label>
+<input type="text" id="projectName" placeholder="Optional">
+
 <label>Material price per kg (Gs)</label>
 <input type="number" id="materialPrice" value="200000">
 
@@ -133,6 +140,9 @@ input:focus {
 
 <label>Minimum final price (Gs)</label>
 <input type="number" id="minimum" value="40000">
+
+<button onclick="generateOfferPDF()">Export Offer PDF</button>
+<button onclick="generateInvoicePDF()">Generate Invoice PDF</button>
 </div>
 
 <div class="card result" id="breakdown"></div>
@@ -191,6 +201,83 @@ function calculate() {
     finalPriceDiv.innerHTML = "FINAL PRICE: " + formatGs(Math.round(finalPrice));
 }
 
+function generateOfferPDF() {
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF();
+
+    // Logo
+    const img = new Image();
+    img.src = './images/logo.png';
+    img.onload = function() {
+        pdf.addImage(img, 'PNG', 10, 10, 50, 25); // 50mm width, height auto
+
+        // Header
+        pdf.setFontSize(16);
+        pdf.text("Offer for: " + (clientNameInput.value || "Client"), 70, 20);
+        if(projectNameInput.value) pdf.text("Project: " + projectNameInput.value, 70, 30);
+
+        // Price breakdown
+        pdf.setFontSize(12);
+        let y = 50;
+        pdf.text(`Material: ${formatGs(parseFloat(materialPriceInput.value))}`, 10, y);
+        y += 10;
+        pdf.text(`Machine: ${formatGs(parseFloat(hoursInput.value) * parseFloat(machineCostInput.value))}`, 10, y);
+        y += 10;
+        pdf.text(`Labor: ${formatGs(parseFloat(laborInput.value))}`, 10, y);
+        y += 10;
+        pdf.text(`Profit: ${formatGs(parseFloat(profitMarginInput.value) * (parseFloat(materialPriceInput.value) + parseFloat(hoursInput.value) * parseFloat(machineCostInput.value) + parseFloat(laborInput.value)))}`, 10, y);
+        y += 10;
+        pdf.text(finalPriceDiv.innerText, 10, y);
+
+        // Save PDF
+        let filename = clientNameInput.value ? clientNameInput.value : "Offer";
+        pdf.save(`${filename}.pdf`);
+    };
+}
+
+function generateInvoicePDF() {
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF();
+
+    // Logo
+    const img = new Image();
+    img.src = './images/logo.png';
+    img.onload = function() {
+        pdf.addImage(img, 'PNG', 10, 10, 50, 25);
+
+        // Header
+        pdf.setFontSize(16);
+        pdf.text("Invoice", 70, 20);
+        pdf.setFontSize(12);
+        pdf.text("Client: " + (clientNameInput.value || "Client"), 70, 30);
+        if(projectNameInput.value) pdf.text("Project: " + projectNameInput.value, 70, 40);
+
+        // Invoice metadata
+        let invoiceNumber = "INV-" + new Date().getTime(); // simple unique ID
+        let issueDate = new Date().toLocaleDateString();
+        let dueDate = new Date();
+        dueDate.setDate(dueDate.getDate() + 15); // 15 days later
+        dueDate = dueDate.toLocaleDateString();
+
+        pdf.text("Invoice #: " + invoiceNumber, 10, 60);
+        pdf.text("Issue Date: " + issueDate, 10, 70);
+        pdf.text("Due Date: " + dueDate, 10, 80);
+
+        // Price info (reuse your final price)
+        pdf.text(finalPriceDiv.innerText, 10, 100);
+
+        // Optional: payment instructions
+        pdf.text("Payment via bank transfer to account XXXXXXXX", 10, 120);
+
+        // Save PDF
+        let filename = clientNameInput.value ? `Invoice_${clientNameInput.value}.pdf` : "Invoice.pdf";
+        pdf.save(filename);
+    };
+}
+
+
+const clientNameInput = document.getElementById("clientName");
+const projectNameInput = document.getElementById("projectName");
 const materialPriceInput = document.getElementById("materialPrice");
 const shippingInput = document.getElementById("shipping");
 const weightInput = document.getElementById("weight");
